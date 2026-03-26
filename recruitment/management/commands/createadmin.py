@@ -9,6 +9,6 @@ class Command(BaseCommand):
                 email="admin@gmail.com",
                 password="admin123"
             )
-            print("Superuser created.")
+            print("Superuser created")
         else:
-            print("Superuser already exists.")
+            print("Admin already exists")
