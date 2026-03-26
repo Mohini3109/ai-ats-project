@@ -1,0 +1,9 @@
+<td>
+    {% if not candidate.is_shortlisted %}
+    <a href="{% url 'shortlist' candidate.id %}">
+        <button>Shortlist</button>
+    </a>
+    {% else %}
+    <span>Shortlisted</span>
+    {% endif %}
+</td>

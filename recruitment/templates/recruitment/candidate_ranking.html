@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Candidate Ranking</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px auto; max-width: 1000px; background-color: #f4f7f6; }
+        .container { background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h2 { color: #333; border-bottom: 2px solid #eee; padding-bottom: 15px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #2c3e50; color: white; }
+        tr:hover { background-color: #f8f9fa; }
+        .filter-form { margin-bottom: 20px; background: #e9ecef; padding: 15px; border-radius: 5px; }
+        select, button { padding: 10px; margin-right: 10px; font-size: 15px; border: 1px solid #ccc; border-radius: 4px; }
+        button { background-color: #2c3e50; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #1a252f; }
+        .score { font-weight: bold; }
+        .score-high { color: #28a745; }
+        .score-med { color: #fd7e14; }
+        .score-low { color: #dc3545; }
+        .link-btn { text-decoration: none; color: #007bff; }
+        .link-btn:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Candidate Ranking Dashboard</h2>
+        
+        {% if messages %}
+            <div style="background-color: #d4edda; color: #155724; padding: 15px; border-radius: 4px; border: 1px solid #c3e6cb; margin-bottom: 20px;">
+                {% for message in messages %}
+                <p style="margin: 0;">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;">
+            <form class="filter-form" method="get" style="margin: 0; padding: 10px; flex-grow: 1; margin-right: 20px;">
+                <select name="job_id">
+                    <option value="">-- All Open Positions --</option>
+                    {% for job in jobs %}
+                    <option value="{{ job.id }}" {% if selected_job and selected_job.id == job.id %}selected{% endif %}>{{ job.title }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Filter Candidates</button>
+                <a href="{% url 'add-job' %}" style="margin-left: 10px; text-decoration:none; color: #2c3e50; border: 1px solid #2c3e50; padding: 8px 12px; background: #fff; border-radius: 4px;">+ Create Job</a>
+            </form>
+            <div style="display: flex; gap: 10px;">
+                <a href="{% url 'upload-resume' %}" style="text-decoration:none; color: #fff; background: #28a745; padding: 10px 15px; border-radius: 4px; height: fit-content;">+ Add Candidate</a>
+                <form action="{% url 'logout' %}" method="post" style="margin: 0;">
+                    {% csrf_token %}
+                    <button type="submit" style="background: #dc3545; padding: 10px 15px;">Logout ({{ user.username }})</button>
+                </form>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Candidate</th>
+                    <th>Email</th>
+                    <th>Target Role</th>
+                    <th>Parsed Skills</th>
+                    <th>Match Score</th>
+                    <th>Resume</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for candidate in candidates %}
+                <tr {% if candidate.is_shortlisted %}style="background-color: #f8fff9;"{% endif %}>
+                    <td>
+                        <strong>{{ candidate.name }}</strong>
+                        {% if candidate.is_shortlisted %}
+                        <span style="background: #28a745; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px; margin-left: 5px;">Shortlisted</span>
+                        {% endif %}
+                    </td>
+                    <td><a href="mailto:{{ candidate.email }}" class="link-btn">{{ candidate.email }}</a></td>
+                    <td>{{ candidate.job.title|default:"General Application" }}</td>
+                    <td style="max-width:250px; font-size: 0.9em; color:#555;">{{ candidate.skills|default:"No technical skills parsed"|truncatechars:100 }}</td>
+                    <td class="score {% if candidate.match_score >= 70 %}score-high{% elif candidate.match_score >= 40 %}score-med{% else %}score-low{% endif %}">
+                        {{ candidate.match_score|floatformat:1 }}%
+                    </td>
+                    <td>
+                        {% if candidate.resume %}
+                        <a href="{{ candidate.resume.url }}" target="_blank" class="link-btn">View PDF</a>
+                        {% else %}
+                        No File
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form method="post" action="{% url 'toggle-shortlist' candidate.id %}" style="margin: 0;">
+                            {% csrf_token %}
+                            <button type="submit" style="background: {% if candidate.is_shortlisted %}#dc3545{% else %}#28a745{% endif %}; color: white; padding: 6px 12px; font-size: 12px; border-radius: 4px; cursor: pointer; border: none;">
+                                {% if candidate.is_shortlisted %}Remove{% else %}Shortlist{% endif %}
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align:center; padding: 30px;">
+                        <em>No candidates have applied yet. Go ahead and add some!</em>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

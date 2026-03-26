@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Success</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 50px auto; max-width: 600px; text-align: center; background-color: #f4f7f6; }
+        .container { background-color: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h2 { color: #28a745; }
+        a { text-decoration: none; color: #0066cc; font-weight: bold; display: inline-block; margin-top: 20px; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Upload Successful!</h2>
+        <p>We've successfully received your resume. We will review it and get back to you soon.</p>
+        <a href="{% url 'upload-resume' %}">&larr; Upload another resume</a>
+    </div>
+</body>
+</html>

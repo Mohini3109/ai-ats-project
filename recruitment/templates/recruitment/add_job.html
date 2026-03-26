@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create New Job Posting</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f7f6; margin: 40px auto; max-width: 600px; }
+        .container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h2 { border-bottom: 2px solid #eee; padding-bottom: 10px; color: #2c3e50; }
+        .form-control { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        label { font-weight: bold; margin-top: 15px; display: block; color: #333; }
+        .btn { width: 100%; padding: 12px; background: #2c3e50; color: white; border: none; cursor: pointer; border-radius: 4px; font-size: 16px; margin-top: 20px; }
+        .btn:hover { background: #1a252f; }
+        .back-link { display: inline-block; margin-bottom: 20px; text-decoration: none; color: #007bff; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{% url 'candidate-ranking' %}" class="back-link">&larr; Back to Dashboard</a>
+        <h2>Create a New Job Posting</h2>
+        
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn">Publish Job</button>
+        </form>
+    </div>
+</body>
+</html>
